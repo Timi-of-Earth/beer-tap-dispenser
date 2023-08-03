@@ -8,12 +8,14 @@ export interface Dispenser {
   export interface DispenserStats {
     id: number;
     totalVolume: number;
+    duration: number;
     totalSale: number;
     timesUsed: number;
   }
 
   export interface SalesStats {
     totalVolume: number;
+    totalDuration: number;
     totalSale: number;
     timesUsed: number;
   }

@@ -14,7 +14,6 @@ class DispenserController {
         data: dispenser
       });
     } catch (err: any) {
-      console.log(err)
       res.status(err.status).json({ error: err.message });
     }
   }
@@ -27,7 +26,6 @@ class DispenserController {
         status: "success"
       });
     } catch (err: any) {
-      console.log(err);
       res.status(err.status).json({ error: err.message });
     }
   }
@@ -40,7 +38,6 @@ class DispenserController {
         statis: "success"
       });
     } catch (err: any) {
-      console.log(err)
       res.status(err.status).json({ error: err.message });
     }
   }
@@ -54,7 +51,18 @@ class DispenserController {
         data: stats
       });
     } catch (err: any) {
-      console.log(err)
+      res.status(err.status).json({ error: err.message });
+    }
+  }
+
+  getAllDispenserStats(req: Request, res: Response) {
+    try {
+      const stats = dispenserService.getAllDispenserStats();
+      res.status(200).json({
+        status: "success",
+        data: stats
+      });
+    } catch (err: any) {
       res.status(err.status).json({ error: err.message });
     }
   }

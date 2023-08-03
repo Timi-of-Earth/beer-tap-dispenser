@@ -17,15 +17,19 @@ export class DispenserRepository {
     getDispenserById(id: number): Dispenser {
         const dispenser = this.dispensers.find((dispenser) => dispenser.id === id);
         if (!dispenser) {
-          throw new Error('Dispenser not found');
+          throw new AppError('Dispenser not found', 404);
         }
         return dispenser;
     }
 
-    updateTap(id: number, isOpen: boolean) {
+    updateTap(id: number, isOpen: boolean): boolean {
         const dispenser = this.getDispenserById(id);
         if (dispenser.isOpen === isOpen) throw new AppError(`Dispenser is already ${dispenser.isOpen? "open" : "closed"}`, 400)
         dispenser.isOpen = isOpen;
         return true;
+    }
+
+    getAllDispensers(): Dispenser[] {
+        return this.dispensers;
     }
 }
