@@ -5,39 +5,32 @@ import { DispenserRepository } from './dispenser.repository';
 import { SaleSessions } from './sale-session.repository';
 
 const salesSessionRepository = new SaleSessions();
-const pricePerMl = 0.1;
+const price_per_ml = 0.1; //Dollars per milliliter
 const dispenserRepository = new DispenserRepository();
 
 class DispenserService {
   private dispensers: Dispenser[] = [];
 
   createDispenser(flow_volume: number): Dispenser {
-    const dispenser: Dispenser = {
-      id: this.dispensers.length + 1,
-      flow_volume,
-      isOpen: false,
-    };
-    this.dispensers.push(dispenser);
+    const dispenser = dispenserRepository.createDispenser(flow_volume);
     return dispenser;
   }
 
   openTap(id: number): void {
     const startTime = Date.now();
-    const dispenser = this.getDispenserById(id);
-    if (dispenser.isOpen) throw new AppError('Dispenser is already in use', 400);
-    dispenser.isOpen = true;
-    salesSessionRepository.createSession(id, startTime);
+    const opened = dispenserRepository.updateTap(id, true);
+    if (opened) salesSessionRepository.createSession(id, startTime);
   }
 
   closeTap(id: number): void {
     const stopTime = Date.now();
-    const dispenser = this.getDispenserById(id);
-    if (!dispenser.isOpen) throw new AppError('Dispenser is not currently in use', 400);
+    const dispenser = dispenserRepository.getDispenserById(id);
+    if (!dispenser.isOpen) throw new AppError('Dispenser is already closed', 400);
     
     const session = salesSessionRepository.getOpenSessionByDispenserId(id);
     const duration = (stopTime - session.startTime) / 3600;
     const volume = duration * dispenser.flow_volume;
-    const price = volume * pricePerMl;
+    const price = volume * price_per_ml;
     const update: SessionUpdate = {
       stopTime, duration, price, volume
     };
@@ -46,7 +39,7 @@ class DispenserService {
 
   getDispenserStats(id: number): DispenserStats {
     const time = Date.now();
-    const dispenser = this.getDispenserById(id);
+    const dispenser = dispenserRepository.getDispenserById(id);
     const stats: DispenserStats = {
       id,
       totalVolume: 0,
@@ -61,7 +54,7 @@ class DispenserService {
         stats.totalSale += session.price;
       } else {
         let tempVolume = ((time - session.startTime)/3600) * dispenser.flow_volume;
-        let tempPrice = tempVolume * pricePerMl;
+        let tempPrice = tempVolume * price_per_ml;
         stats.totalVolume += tempVolume;
         stats.totalSale += tempPrice;
       }
@@ -86,13 +79,6 @@ class DispenserService {
     return stats
   }
 
-  private getDispenserById(id: number): Dispenser {
-    const dispenser = this.dispensers.find((dispenser) => dispenser.id === id);
-    if (!dispenser) {
-      throw new Error('Dispenser not found');
-    }
-    return dispenser;
-  }
 }
 
 export default DispenserService;
