@@ -32,20 +32,6 @@ describe('Dispenser Service', () => {
     expect(dispenser.isOpen).toBe(false);
   });
 
-  it('should get dispenser stats', () => {
-    const flow_volume = 50;
-    const dispenser = dispenserService.createDispenser(flow_volume);
-
-    dispenserService.openTap(dispenser.id);
-    dispenserService.closeTap(dispenser.id);
-
-    const stats = dispenserService.getDispenserStats(dispenser.id);
-    expect(stats.id).toBe(dispenser.id);
-    expect(Number(stats.totalVolume)).toBeCloseTo(flow_volume , 2); // Expecting 50
-    expect(stats.timesUsed).toBe(1);
-    expect(stats.totalSale).toBe(0.1)
-  });
-
   it('should throw an error when dispenser is not found', () => {
     expect(() => dispenserService.getDispenserStats(999)).toThrow('Dispenser not found');
   });

@@ -76,13 +76,16 @@ class DispenserService {
   }
 
   getSalesStats(): SalesStats {
+    const dispensers = dispenserRepository.getAllDispensers();
     const stats: SalesStats = {
       totalVolume: 0,
       totalDuration: 0,
       totalSale: 0,
-      timesUsed: 0
+      timesUsed: 0,
+      dispenserCount: dispensers.length
     }
-    dispenserRepository.getAllDispensers().forEach((dispenser) => {
+    
+    dispensers.forEach((dispenser) => {
       const dispenserStats = this.getDispenserStats(dispenser.id);
       stats.totalVolume += dispenserStats.totalVolume;
       stats.totalSale += dispenserStats.totalSale;

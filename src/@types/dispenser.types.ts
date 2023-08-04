@@ -14,6 +14,7 @@ export interface Dispenser {
   }
 
   export interface SalesStats {
+    dispenserCount: number;
     totalVolume: number;
     totalDuration: number;
     totalSale: number;
